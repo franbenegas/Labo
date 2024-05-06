@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 """
 Created on Fri Oct 27 11:40:18 2023
@@ -244,7 +245,7 @@ def Matriz_de_interacciones(filas:int, columnas:int ,Matriz_dominios, conductivi
     
     sigma_filas, sigma_columnas = conductividades
     
-    sigma_mono = 0.5 * ((1 / sigma_filas) + (1 / sigma_columnas))
+    sigma_mono = (2*sigma_columnas*sigma_filas)/(sigma_columnas + sigma_filas)#1/(0.5 * ((1 / sigma_filas) + (1 / sigma_columnas)))
     
     if pesos == (0, 100):
         sigma_filas, sigma_columnas = sigma_columnas, sigma_filas
@@ -755,32 +756,32 @@ def Seis_contactos(filas:int, columnas:int, Matriz_dominios, conductividades: tu
 columnas = 41  # columnas
 filas = 21 #filas      
 sigma_filas = 1 # Este va entre las filas
-sigma_columnas = 2 #Este es el que va en entre las columnas
+sigma_columnas = 3 #Este es el que va en entre las columnas
 conductividades = (sigma_filas, sigma_columnas)
-Dominios_A = 24
+Dominios_A = 0
 pesos = (Dominios_A,100 - Dominios_A)
-Matriz_dominios = Distribucion_dominios(filas, columnas, pesos, plot=True)
+Matriz_dominios = Distribucion_dominios(filas, columnas, pesos)
 
 Contactos_corriente_entrada_barra = Contactos_barra(filas, 1)  
 Contactos_corriente_salida_barra = Contactos_barra(filas, columnas)  
 
-
-Contactos_tension_entrada_barra = Contactos_barra(filas, int(columnas/2) - int(filas/2))  
-Contactos_tension_salida_barra = Contactos_barra(filas, int(columnas/2) + int(filas/2))  
+radio  = 0
+Contactos_tension_entrada_barra = Contactos_circulares(filas, columnas, (int(filas/2) +1,int(columnas/2) - int(filas/4)), radius = radio)#Contactos_barra(filas, int(columnas/2) - int(filas/2))  
+Contactos_tension_salida_barra = Contactos_circulares(filas, columnas, (int(filas/2) +1,int(columnas/2) + int(filas/4)), radius = radio)#Contactos_barra(filas, int(columnas/2) + int(filas/2))  
     
 
-Malla_barra = Malla_total(filas, columnas, Matriz_dominios, conductividades, Contactos_corriente_entrada_barra, Contactos_corriente_salida_barra,plot_contactos=True,plot_matriz_interaccion=True,diferencia_corriente=True)
+Malla_barra = Malla_total(filas, columnas, Matriz_dominios, conductividades, Contactos_corriente_entrada_barra, Contactos_corriente_salida_barra,plot_contactos=True)
 
 dif_barra = Diferencia_extensa(Malla_barra, Contactos_tension_entrada_barra, Contactos_tension_salida_barra)
-
+print(dif_barra)
 for point in Contactos_tension_entrada_barra:
     plt.scatter(point[1]-1, point[0]-1, color='red', marker='o')  # Adjust the color and marker style as needed
 for point in Contactos_tension_salida_barra:
     plt.scatter(point[1]-1, point[0]-1, color='red', marker='x')
 
 #%% Malla con contactos redondos
-columnas =101  # columnas
-filas = 51 #filas      
+columnas = 63  # columnas
+filas = 21 #filas       
 sigma_filas = 1 # Este va entre las filas
 sigma_columnas = 2 #Este es el que va en entre las columnas
 conductividades = (sigma_filas, sigma_columnas)
@@ -825,11 +826,11 @@ Seis_contactos(filas, columnas, Matriz_dominios, conductividades,radio=0,plot_ej
 
 
 #%% Variacion de sigmas para contactos barra
-columnas = 41  # columnas
+columnas = 63  # columnas
 filas = 21 #filas      
 
-Contactos_corriente_entrada_barra = Contactos_circulares(filas, columnas, (int(filas/2)+1,1), radius = radio)#Contactos_barra(filas, 1)  
-Contactos_corriente_salida_barra = Contactos_circulares(filas, columnas, (int(filas/2)+1,columnas), radius = radio)#Contactos_barra(filas, columnas)  
+Contactos_corriente_entrada_barra = Contactos_barra(filas, 1)  #Contactos_circulares(filas, columnas, (int(filas/2)+1,1), radius = radio)#
+Contactos_corriente_salida_barra = Contactos_barra(filas, columnas)  #Contactos_circulares(filas, columnas, (int(filas/2)+1,columnas), radius = radio)
 
 
 Contactos_tension_entrada_barra = Contactos_circulares(filas, columnas, (int(filas/2) +1,int(columnas/2) - int(filas/4)), radius = radio)#Contactos_barra(filas, int(columnas/2) - int(filas/2))  
@@ -915,20 +916,21 @@ if seconds > 0 or (hours == 0 and minutes == 0):
 
 print(f"Total time: {time_str}")
 #%%
-
+df_barra["normalizado"] = df_barra["Resistencia eje largo"]/df_barra["Resistencia eje largo"].iloc[0]
 plt.figure(figsize=(14,7))
+plt.title(f'Malla de {filas}x{columnas}')
 plt.grid()
-sns.scatterplot(data=df_barra, x="Proporcion de Dominios", y="Resistencia eje largo", hue="Conductividad",style="Conductividad")
+sns.scatterplot(data=df_barra, x="Proporcion de Dominios", y="normalizado", hue="Conductividad",style="Conductividad")
 
 #%%
 
 # Save the dictionary to a file
-with open('Simlaciones barra puntuales', 'wb') as file:
+with open(f'Simlaciones barra corriente y tension puntuales {filas}x{columnas}.pkl', 'wb') as file:
     pickle.dump(df_barra, file)
 #%% Variacion de sigmas para seis contactos
 
-columnas = 101  # columnas
-filas = 51 #filas      
+columnas = 63  # columnas
+filas = 21 #filas      
 radio=0
 Columnas = ["Proporcion de Dominios","Resistencia eje corto","STD eje corto", "Resistencia eje largo","STD eje largo","Conductividad"]
 df_seis_contactos = pd.DataFrame(columns=Columnas)
@@ -1000,6 +1002,7 @@ print(f"Total time: {time_str}")
 
 df_seis_contactos[r'$\frac{R_{corto}-R_{largo}}{R_{corto}+R_{largo}}$'] = (df_seis_contactos["Resistencia eje corto"] - df_seis_contactos["Resistencia eje largo"]) / (df_seis_contactos["Resistencia eje corto"] + df_seis_contactos["Resistencia eje largo"])
 plt.figure(figsize=(14,7))
+plt.title(f'Malla de {filas}x{columnas}')
 plt.grid()
 sns.scatterplot(data=df_seis_contactos, x="Proporcion de Dominios", y=r'$\frac{R_{corto}-R_{largo}}{R_{corto}+R_{largo}}$', hue="Conductividad",style="Conductividad")
 #%%
@@ -1017,6 +1020,6 @@ for i in range(0,3):
 #%%
 
 # Save the dictionary to a file
-with open('Simlaciones seis contactos', 'wb') as file:
+with open(f'Simlaciones seis contactos {filas}x{columnas}.pkl', 'wb') as file:
     pickle.dump(df_seis_contactos, file)
     
