@@ -769,7 +769,7 @@ Contactos_tension_entrada_barra = Contactos_barra(filas, int(columnas/2) - int(f
 Contactos_tension_salida_barra = Contactos_barra(filas, int(columnas/2) + int(filas/2))  
     
 
-Malla_barra = Malla_total(filas, columnas, Matriz_dominios, conductividades, Contactos_corriente_entrada_barra, Contactos_corriente_salida_barra,plot_contactos=True)
+Malla_barra = Malla_total(filas, columnas, Matriz_dominios, conductividades, Contactos_corriente_entrada_barra, Contactos_corriente_salida_barra,plot_contactos=True,plot_matriz_interaccion=True,diferencia_corriente=True)
 
 dif_barra = Diferencia_extensa(Malla_barra, Contactos_tension_entrada_barra, Contactos_tension_salida_barra)
 
@@ -786,7 +786,7 @@ sigma_columnas = 2 #Este es el que va en entre las columnas
 conductividades = (sigma_filas, sigma_columnas)
 Dominios_A = 0
 pesos = (Dominios_A,100 - Dominios_A)
-Matriz_dominios = Distribucion_dominios(filas, columnas, pesos, plot=True)
+Matriz_dominios = Distribucion_dominios(filas, columnas, pesos,plot=True)
 radio = 0
 
 
@@ -794,11 +794,12 @@ Contactos_corriente_entrada_circular = Contactos_circulares(filas, columnas, (in
 Contactos_corriente_salida_circular = Contactos_circulares(filas, columnas, (int(filas/2) + 1,columnas), radius = radio) 
 
 
-Contactos_tension_entrada_circular = Contactos_circulares(filas, columnas, (filas,int(columnas/2) - int(filas/2)), radius = radio) 
-Contactos_tension_salida_circular = Contactos_circulares(filas, columnas, (1,int(columnas/2) + int(filas/2)), radius = radio)
+Contactos_tension_entrada_circular = Contactos_circulares(filas, columnas, (int(filas/2) + 1,int(columnas/2) - int(filas/4)), radius = radio) 
+Contactos_tension_salida_circular = Contactos_circulares(filas, columnas, (int(filas/2) + 1,int(columnas/2) + int(filas/4)), radius = radio)
 
 
-Malla_circular = Malla_total(filas, columnas, Matriz_dominios, conductividades, Contactos_corriente_entrada_circular, Contactos_corriente_salida_circular,plot_contactos=True)
+Malla_circular = Malla_total(filas, columnas, Matriz_dominios, conductividades, Contactos_corriente_entrada_circular, Contactos_corriente_salida_circular,plot_contactos=True,plot_matriz_interaccion=True,diferencia_corriente=True)
+
 dif_circular = Diferencia_extensa(Malla_circular, Contactos_tension_entrada_circular, Contactos_tension_salida_circular)
 
 for point in Contactos_tension_entrada_circular:
@@ -1019,153 +1020,3 @@ for i in range(0,3):
 with open('Simlaciones seis contactos', 'wb') as file:
     pickle.dump(df_seis_contactos, file)
     
-# with open('Promedios', 'wb') as file:
-#     pickle.dump(Promedios, file)
-    
-# with open('Desviaciones', 'wb') as file:
-#     pickle.dump(Desviaciones, file)
-#%%
-   
-plt.figure()
-# plt.title(f'Conductividad = {conductividades}')
-plt.plot(Promedios, marker = '.',label =f'Conductividad = {conductividades}')
-plt.xlabel('Dominios')
-plt.ylabel('Resistencia')
-plt.grid()
-plt.legend(fancybox=True, shadow=True)
-
-
-#%%
-columnas =101  # columnas
-filas = 51 #filas      
-sigma_filas = 1 # Este va entre las filas
-sigma_columnas = 2 #Este es el que va en entre las columnas
-conductividades = (sigma_filas, sigma_columnas)
-Dominios_A = 50
-pesos = (Dominios_A,100 - Dominios_A)
-Matriz_dominios = Distribucion_dominios(filas, columnas, pesos, plot=True)
-
-Contactos_corriente_entrada_barra = Contactos_barra(filas, 1)  
-Contactos_corriente_salida_barra = Contactos_barra(filas, columnas)  
-
-
-# Contactos_tension_entrada_barra = Contactos_barra(filas, int(columnas/2) - int(filas/2))  
-# Contactos_tension_salida_barra = Contactos_barra(filas, int(columnas/2) + int(filas/2))
-
-radio = 0
-Contactos_tension_entrada_circular = Contactos_circulares(filas, columnas, (filas,int(columnas/2) - int(filas/2)), radius = radio) 
-Contactos_tension_salida_circular = Contactos_circulares(filas, columnas, (1,int(columnas/2) + int(filas/2)), radius = radio)
-
-# M = Malla_cargada(filas, columnas, Matriz_dominios, conductividades, Contactos_corriente_entrada_barra, Contactos_corriente_salida_barra,plot_contactos=True)
-
-# D = Diferencia_extensa(M, Contactos_tension_entrada_circular, Contactos_tension_salida_circular)
-
-D =Seis_contactos(filas, columnas, Matriz_dominios, conductividades, radio,plot_eje_corto=True, plot_eje_largo=True)
-
-print(D)
-
-#%%
-
-columnas =21  # columnas
-filas = 11 #filas      
-sigma_filas = 1 # Este va entre las filas
-sigma_columnas = 2 #Este es el que va en entre las columnas
-conductividades = (sigma_filas, sigma_columnas)
-Dominios_A = 0
-pesos = (Dominios_A,100 - Dominios_A)
-Matriz_dominios = Distribucion_dominios(filas, columnas, pesos, plot=True)
-radio = 0
-
-
-
-Contactos_corriente_entrada_circular = Contactos_circulares(filas, columnas, (int(filas/2) + 1,1), radius = radio) 
-Contactos_corriente_salida_circular = Contactos_circulares(filas, columnas, (int(filas/2) + 1,columnas), radius = radio) 
-
-Contactos_tension_entrada_circular = Contactos_circulares(filas, columnas, (filas,int(columnas/2) - int(filas/2)), radius = radio) 
-Contactos_tension_salida_circular = Contactos_circulares(filas, columnas, (1,int(columnas/2) + int(filas/2)), radius = radio)
-
-# Calculate interaction matrix and conservation matrix
-Matriz_interaccion_1 = Matriz_de_interacciones(filas, columnas, Matriz_dominios, conductividades, pesos, plot_matriz_interaccion=True)
-Matriz_conservacion_1 = Matriz_de_conservacion(filas, columnas, Matriz_interaccion_1, plot_matriz_conservacion=None)
-
-
-Dominios_A = 100
-pesos = (Dominios_A,100 - Dominios_A)
-Matriz_dominios = Distribucion_dominios(filas, columnas, pesos, plot=True)
-Matriz_interaccion_2 = Matriz_de_interacciones(filas, columnas, Matriz_dominios, conductividades, pesos, plot_matriz_interaccion=True)
-Matriz_conservacion_2 = Matriz_de_conservacion(filas, columnas, Matriz_interaccion_2, plot_matriz_conservacion=None)
-# # Apply extensive contacts to conservation matrix and solve for currents
-# Matriz_contactos, Condiciones = contactos_extensos(Matriz_conservacion, Contactos_corriente_entrada_circular, Contactos_corriente_salida_circular)
-
-# Matriz_contactos = csc_matrix(Matriz_contactos)
-# Malla_con_corriente = spsolve( Matriz_contactos, Condiciones)
-# Malla_con_corriente = Malla_con_corriente.reshape((filas,columnas))
-
-# # Normalize the mesh by dividing by the total current
-# Malla_normalizada = Malla_con_corriente# / corriente_extensa(Malla_con_corriente, Contactos_corriente_entrada, Matriz_interaccion)
-
-# dif_corriente = corriente_extensa(Malla_con_corriente, Contactos_corriente_entrada_circular, Matriz_interaccion) + corriente_extensa(Malla_con_corriente, Contactos_corriente_salida_circular, Matriz_interaccion)
-
-# print("%.2f" %  dif_corriente)
-# dif_circular = Diferencia_extensa(Malla_circular, Contactos_tension_entrada_circular, Contactos_tension_salida_circular)
-
-# # for point in Contactos_tension_entrada_circular:
-# #     plt.scatter(point[1]-1, point[0]-1, color='red', marker='o')  # Adjust the color and marker style as needed
-# # for point in Contactos_tension_salida_circular:
-# #     plt.scatter(point[1]-1, point[0]-1, color='red', marker='x')
-
-#%%
-
-columnas =21  # columnas
-filas = 11 #filas      
-sigma_filas = 1 # Este va entre las filas
-sigma_columnas = 2 #Este es el que va en entre las columnas
-conductividades = (sigma_filas, sigma_columnas)
-
-
-Dominios_A = 1
-pesos = (Dominios_A,100 - Dominios_A)
-Matriz_dominios = Distribucion_dominios(filas, columnas, pesos, plot=True)
-#%%
-
-    
-    
-
-
-#%%
-columnas =41  # columnas
-filas = 21 #filas      
-sigma_filas = 1 # Este va entre las filas
-sigma_columnas = 2 #Este es el que va en entre las columnas
-conductividades = (sigma_filas, sigma_columnas)
-Dominios_A = 25
-pesos = (Dominios_A,100 - Dominios_A)
-Matriz_dominios = Distribucion_dominios(filas, columnas, pesos)
-radio = 0
-
-
-
-Contactos_corriente_entrada_circular = Contactos_circulares(filas, columnas, (int(filas/2) + 1,1), radius = radio) 
-Contactos_corriente_salida_circular = Contactos_circulares(filas, columnas, (int(filas/2) + 1,columnas), radius = radio) 
-
-Contactos_tension_entrada_circular = Contactos_circulares(filas, columnas, (filas,int(columnas/2) - int(filas/2)), radius = radio) 
-Contactos_tension_salida_circular = Contactos_circulares(filas, columnas, (1,int(columnas/2) + int(filas/2)), radius = radio)
-
-
-Malla_circular = Malla_total(filas, columnas, Matriz_dominios, conductividades, Contactos_corriente_entrada_barra, Contactos_corriente_salida_barra,plot_contactos=True,plot_matriz_interaccion=True,normalizar=False,diferencia_corriente=True)
-for point in Contactos_tension_entrada_barra:
-    plt.scatter(point[1]-1, point[0]-1, color='red', marker='o')  # Adjust the color and marker style as needed
-for point in Contactos_tension_salida_barra:
-    plt.scatter(point[1]-1, point[0]-1, color='red', marker='x')
-
-
-
-#%%
-sigma_filas = 1 # Este va entre las filas
-sigma_columnas = 2 #Este es el que va en entre las columnas
-conductividades = (sigma_filas, sigma_columnas)
-Dominios_A = 100
-pesos = (Dominios_A,100 - Dominios_A)
-Matriz_dominios = Distribucion_dominios(filas, columnas, pesos)
-
-D = Seis_contactos(filas, columnas, Matriz_dominios, conductividades, radio,plot_eje_corto=True,plot_eje_largo=True)
